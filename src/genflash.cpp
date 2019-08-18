@@ -17,7 +17,12 @@
 #include <getopt.h>
 #include "ScatterProc.h"
 
+
 #define BUFF_SIZE 4096
+//DEBUG SWITCHES
+#define PRINTDATA 0
+#define ANALYZE_DATA 1
+
 
 int main(int argc, char **argv) {
 	int opt;
@@ -55,6 +60,8 @@ int main(int argc, char **argv) {
 	if(sp.readScatterFile(scatterfn) == SCATTER_PROC_ERROR){
 		return 3;
 	}
+
+#if PRINT_DATA
 	//PRINT COLLECTED DATA
 	char *b = new char[4096];
 	for(auto it = sp.partition.begin(); it != sp.partition.end(); ++it){
@@ -62,8 +69,12 @@ int main(int argc, char **argv) {
 		std::cout << b << std::endl;
 	}
 	delete [] b;
+#endif
 
-
+#if ANALYZE_DATA
+	//ANALYZE PARTITION DATA
+	sp.analyzePartitions();
+#endif
 
 	//CHECK WHETHER THE LARGE IMAGE FILE IS PROVIDED
 	if(imgfn == nullptr){
@@ -77,6 +88,7 @@ int main(int argc, char **argv) {
 		std::cerr << "Error in opening file " << imgfn << std::endl;
 		return 2;
 	}
+
 
 	//SCATTERING IMAGE
 	/*
@@ -95,7 +107,7 @@ int main(int argc, char **argv) {
 					std::cerr << "Error in opening file: " << it->file_name << std::endl;
 					continue;
 				}
-				imgfile.seekg(it->physical_start_addr);
+				imgfile.seekg(it->linear_start_addr);
 				static char buff[BUFF_SIZE];
 				uint64_t count = 0;
 				while(count < it->partition_size){

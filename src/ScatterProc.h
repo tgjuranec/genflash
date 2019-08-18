@@ -21,6 +21,7 @@ class ScatterProc {
 public:
 	std::vector <PartitionData> partition;
 	int readScatterFile(char *scattername);
+	void analyzePartitions();
 	ScatterProc();
 	~ScatterProc();
 };
